@@ -1,0 +1,40 @@
+#!/bin/bash
+# Start/stop the minidlna server (minidlnad):
+pidfile='/var/run/minidlnad.pid'
+
+minidlna_start() {
+  echo 'Starting the minidlna server...'
+  /usr/sbin/minidlnad -P ${pidfile}
+}
+
+minidlna_stop() {
+  echo 'Stopping the minidlna server...'
+  kill `cat ${pidfile}`
+}
+
+minidlna_restart() {
+  if [ -r ${pidfile} ]; then
+    minidlna_stop
+	sleep 1
+  else
+    echo "No pidfile (${pidfile}) found... Most probably there is no minidlna instance running"
+	echo "You can use '$0 start' to start it"
+	exit 1
+  fi
+  minidlna_start
+}
+
+case "$1" in
+'start')
+  minidlna_start
+  ;;
+'stop')
+  minidlna_stop
+  ;;
+'restart')
+  minidlna_restart
+  ;;
+*)
+  echo "usage $0 start|stop|restart"
+esac
+
